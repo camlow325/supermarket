@@ -3,39 +3,46 @@ package supermarket;
 /**
  *
  */
-class Product
+class Product implements IProduct
 {
-    private String name;
-    private int price;
+    private String id;
+    private int unitPrice;
 
-    public Product(String name, int price)
+    public Product(String id, int unitPrice)
     {
-        if (name == null)
+        if (id == null)
         {
-            throw new IllegalArgumentException("name is null");
+            throw new IllegalArgumentException("id cannot be null");
         }
 
-        if (name.isEmpty())
+        if (id.isEmpty())
         {
-            throw new IllegalArgumentException("name is empty");
+            throw new IllegalArgumentException("id cannot be empty");
         }
 
-        if (price < 0)
-        {
-            throw new IllegalArgumentException("price is negative");
-        }
+        setPrice(unitPrice);
 
-        this.name = name;
-        this.price = price;
+        this.id = id;
+        this.unitPrice = unitPrice;
     }
 
-    public String getName()
+    public String getId()
     {
-        return name;
+        return id;
     }
 
     public int getPrice()
     {
-        return price;
+        return unitPrice;
+    }
+
+    public void setPrice(int unitPrice)
+    {
+        if (unitPrice < 0)
+        {
+            throw new IllegalArgumentException("price is negative");
+        }
+
+        this.unitPrice = unitPrice;
     }
 }

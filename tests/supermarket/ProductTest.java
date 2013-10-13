@@ -27,11 +27,11 @@ public class ProductTest
     }
 
     @Test
-    public void testGetName()
+    public void testGetId()
     {
         String name = "A";
         Product product = new Product(name, 2);
-        Assert.assertEquals("Unexpected name retrieved", name, product.getName());
+        Assert.assertEquals("Unexpected name retrieved", name, product.getId());
     }
 
     @Test

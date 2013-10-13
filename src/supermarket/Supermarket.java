@@ -1,46 +1,31 @@
 package supermarket;
 
-import java.lang.Iterable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  */
 
-// Adding suppression since public access is desired for the problem
-@SuppressWarnings("WeakerAccess")
 public class Supermarket
 {
-    private final HashMap<String, Product> productMap;
+    private IInventory inventory;
 
-    public Supermarket(Iterable<Product> products)
+    public Supermarket(IInventory inventory)
     {
-        this.productMap = new HashMap<String,Product>();
-        if (products != null)
+        if (inventory == null)
         {
-            for (Product product : products)
-            {
-                if (product != null)
-                {
-                    this.productMap.put(product.getName(), product);
-                }
-            }
+            throw new IllegalArgumentException("inventory cannot be null");
         }
-    }
 
-    Set<Entry<String,Product>> getProducts()
-    {
-        return Collections.unmodifiableSet(productMap.entrySet());
+        this.inventory = inventory;
     }
 
     public int checkout(String items)
     {
         int total = 0;
 
-        if (items != null && items.length() > 0)
+        if (items != null)
         {
             total = 1;
             System.out.println("items are: " + items);
@@ -49,5 +34,20 @@ public class Supermarket
         return total;
     }
 
+    /**
+     * Program main
+     * @param args Ignored
+     */
+    public static void main(String[] args)
+    {
+        List<IProduct> originalProducts = new ArrayList<IProduct>();
+        originalProducts.add(new Product("A", 20));
+        originalProducts.add(new Product("B", 50));
+        originalProducts.add(new Product("C", 30));
 
+        Inventory inventory = new Inventory(originalProducts);
+
+        Supermarket supermarket = new Supermarket(inventory);
+        System.out.println("total at checkout is " + supermarket.checkout("ABC"));
+    }
 }
