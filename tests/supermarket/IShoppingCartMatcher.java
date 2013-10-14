@@ -8,62 +8,61 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- *
+ *  Matcher for IShoppingCart equality
  */
 class IShoppingCartMatcher extends TypeSafeMatcher<IShoppingCart>
 {
     private final IShoppingCart expectedCart;
 
+    /**
+     * Class constructor
+     * @param expectedCart  Cart against which a test object is to be compared.
+     */
     public IShoppingCartMatcher(IShoppingCart expectedCart)
     {
         this.expectedCart = expectedCart;
     }
 
+    /**
+     * Attempts to match the supplied actualCart against the expectedCart provided in the constructor.
+     * @param actualCart  Actual cart to be compared against the expectedCart supplied in the constructor.
+     * @return  True if the two carts have matching content.  Otherwise, false.
+     */
     @Override
     protected boolean matchesSafely(IShoppingCart actualCart)
     {
         return getMismatchMessage(actualCart).isEmpty();
     }
 
+    /**
+     * Adds text to the supplied mismatchDescription pertaining to the reason that the supplied actualCart does
+     * not match the expectedCart supplied in the constructor.
+     * @param actualCart  Actual cart to be compared against the expectedCart supplied in the constructor.
+     * @param mismatchDescription  Description of the mismatch.
+     */
     @Override
     protected void describeMismatchSafely(IShoppingCart actualCart, Description mismatchDescription)
     {
         mismatchDescription.appendText(getMismatchMessage(actualCart));
     }
 
-    private String getMismatchMessage(IShoppingCart actualCart)
-    {
-        String message = "";
-
-        if (expectedCart == null)
-        {
-            if (actualCart != null)
-            {
-                message = "Actual cart has items but expected does not";
-            }
-        }
-        else
-        {
-            if (actualCart == null)
-            {
-                message = "Expected cart has items but actual does not";
-            }
-            else
-            {
-                message = getItemComparisonFailureMessage(expectedCart.getItems(),
-                        actualCart.getItems());
-            }
-        }
-
-        return message;
-    }
-
+    /**
+     * Adds text for the description of this matcher class
+     * @param description  Description of the matcher.
+     */
     @Override
     public void describeTo(Description description)
     {
         description.appendText("IShoppingCartMatcher");
     }
 
+    /**
+     * Compare the expectedItems to the actualItems.  Items compared for length and content but the position of
+     * individual items within the collection may differ while still allowing for a successful result.
+     * @param expectedItems  Items that the actualItems are expected to match.
+     * @param actualItems  Items to be compared to the expectedItems.
+     * @return  True if the items match.  Otherwise, false.
+     */
     public static String getItemComparisonFailureMessage(Collection<IItem> expectedItems, Collection<IItem> actualItems)
     {
         StringBuilder builder = new StringBuilder(": ");
@@ -144,5 +143,32 @@ class IShoppingCartMatcher extends TypeSafeMatcher<IShoppingCart>
                 }
             }
         }
+    }
+
+    private String getMismatchMessage(IShoppingCart actualCart)
+    {
+        String message = "";
+
+        if (expectedCart == null)
+        {
+            if (actualCart != null)
+            {
+                message = "Actual cart has items but expected does not";
+            }
+        }
+        else
+        {
+            if (actualCart == null)
+            {
+                message = "Expected cart has items but actual does not";
+            }
+            else
+            {
+                message = getItemComparisonFailureMessage(expectedCart.getItems(),
+                        actualCart.getItems());
+            }
+        }
+
+        return message;
     }
 }

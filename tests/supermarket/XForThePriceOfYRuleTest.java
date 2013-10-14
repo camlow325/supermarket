@@ -7,57 +7,129 @@ import org.junit.Rule;
 import org.junit.Test;
 
 /**
- *
+ * Tests for the XForThePriceOfYRule class
  */
-public class BuyXGetYFreePriceRuleTest
+public class XForThePriceOfYRuleTest
 {
     @Rule
     public JUnitRuleMockery context = new JUnitRuleMockery();
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when a null product id argument is passed into an
+     * XForThePriceOfYRule object's constructor.
+     */
     @Test(expected=IllegalArgumentException.class)
     public void testNullProductIdInConstructorThrowsIllegalArgumentException()
     {
-        new BuyXGetYFreePriceRule(null, 1, 2);
+        new XForThePriceOfYRule(null, 1, 2);
     }
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when an empty product id argument is passed into a
+     * XForThePriceOfYRule object's constructor.
+     */
     @Test(expected=IllegalArgumentException.class)
-    public void testZeroQuantityToBuyInConstructorThrowsIllegalArgumentException()
+    public void testEmptyProductIdInConstructorThrowsIllegalArgumentException()
     {
-        new BuyXGetYFreePriceRule("A", 0, 2);
+        new XForThePriceOfYRule("", 1, 2);
     }
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when a total quantity for rule of one is passed into an
+     * XForThePriceOfYRule object's constructor.
+     */
     @Test(expected=IllegalArgumentException.class)
-    public void testNegativeQuantityToBuyInConstructorThrowsIllegalArgumentException()
+    public void testOneTotalQuantityForRuleInConstructorThrowsIllegalArgumentException()
     {
-        new BuyXGetYFreePriceRule("A", -1, 2);
+        new XForThePriceOfYRule("A", 1, 2);
     }
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when a total quantity for rule of zero is passed into an
+     * XForThePriceOfYRule object's constructor.
+     */
     @Test(expected=IllegalArgumentException.class)
-    public void testZeroQuantityFreeInConstructorThrowsIllegalArgumentException()
+    public void testZeroTotalQuantityForRuleInConstructorThrowsIllegalArgumentException()
     {
-        new BuyXGetYFreePriceRule("A", 1, 0);
+        new XForThePriceOfYRule("A", 0, 2);
     }
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when a negative total quantity for rule is passed into an
+     * XForThePriceOfYRule object's constructor.
+     */
     @Test(expected=IllegalArgumentException.class)
-    public void testNegativeQuantityFreeInConstructorThrowsIllegalArgumentException()
+    public void testNegativeTotalQuantityForRuleInConstructorThrowsIllegalArgumentException()
     {
-        new BuyXGetYFreePriceRule("A", 1, -1);
+        new XForThePriceOfYRule("A", -1, 2);
     }
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when a quantity paid per unit price of zero is passed into an
+     * XForThePriceOfYRule object's constructor.
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testZeroQuantityPaidPerUnitPriceInConstructorThrowsIllegalArgumentException()
+    {
+        new XForThePriceOfYRule("A", 1, 0);
+    }
+
+    /**
+     * Validate that an IllegalArgumentException is thrown when a negative quantity paid per unit price is passed
+     * into an XForThePriceOfYRule object's constructor.
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNegativeQuantityPaidPerUnitPriceInConstructorThrowsIllegalArgumentException()
+    {
+        new XForThePriceOfYRule("A", 1, -1);
+    }
+
+    /**
+     * Validate that an IllegalArgumentException is thrown when a quantity paid per unit price is equal to that of the
+     * total quantity for the rule is passed into an XForThePriceOfYRule object's constructor.
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testQuantityPaidPerUnitPriceEqualsTotalQuantityForRuleInConstructorThrowsIllegalArgumentException()
+    {
+        new XForThePriceOfYRule("A", 3, 3);
+    }
+
+    /**
+     * Validate that an IllegalArgumentException is thrown when a quantity paid per unit price exceeds that of the
+     * total quantity for the rule is passed into an XForThePriceOfYRule object's constructor.
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testQuantityPaidPerUnitPriceExceedsTotalQuantityForRuleInConstructorThrowsIllegalArgumentException()
+    {
+        new XForThePriceOfYRule("A", 3, 4);
+    }
+
+    /**
+     * Validate that an IllegalArgumentException is thrown when a null cart is passed into an XForThePriceOfYRule
+     * object's process() method.
+     */
     @Test(expected=IllegalArgumentException.class)
     public void testNullCartInProcessCallThrowsIllegalArgumentException()
     {
         final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
-        new BuyXGetYFreePriceRule("A", 1, 1).process(null, inventory);
+        new XForThePriceOfYRule("A", 5, 3).process(null, inventory);
     }
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when a null inventory lookup is passed into an
+     * XForThePriceOfYRule object's process() method.
+     */
     @Test(expected=IllegalArgumentException.class)
     public void testNullLookupInProcessCallThrowsIllegalArgumentException()
     {
         final IShoppingCart cart = context.mock(IShoppingCart.class);
-        new BuyXGetYFreePriceRule("A", 1, 1).process(cart, null);
+        new XForThePriceOfYRule("A", 5, 3).process(cart, null);
     }
 
+    /**
+     * Validate that when an item in the cart has sufficient quantity to meet the rule that the rule processes
+     * the item quantity and cost correctly.
+     */
     @Test
     public void testCanProcessWithMatchingItemInCartAndInventoryWhichHasQuantityMeetingRule()
     {
@@ -82,13 +154,16 @@ public class BuyXGetYFreePriceRuleTest
             oneOf(cart).setItemQuantity(productId, 0);
         }});
 
-        BuyXGetYFreePriceRule rule = new BuyXGetYFreePriceRule(productId, 3, 2);
+        XForThePriceOfYRule rule = new XForThePriceOfYRule(productId, 5, 3);
         Assert.assertEquals("Unexpected subtotal returned from process", 150,
                 rule.process(cart, inventory));
     }
 
+    /**
+     * Validate that when no item in the cart matches the rule's product id that nothing is processed.
+     */
     @Test
-    public void testCanProcessWithNoMatchingItemInCart()
+    public void testCannotProcessWithNoMatchingItemInCart()
     {
         final String productId = "B";
 
@@ -100,13 +175,17 @@ public class BuyXGetYFreePriceRuleTest
             will(returnValue(null));
         }});
 
-        BuyXGetYFreePriceRule rule = new BuyXGetYFreePriceRule(productId, 3, 2);
+        XForThePriceOfYRule rule = new XForThePriceOfYRule(productId, 3, 2);
         Assert.assertEquals("Unexpected subtotal returned from process", 0,
                 rule.process(cart, inventory));
     }
 
+    /**
+     * Validate that when an item in the cart matches the product id configured for the rule but the item has no
+     * remaining quantity that nothing is processed.
+     */
     @Test
-    public void testCanProcessWithMatchingItemInCartWhichHasNoQuantity()
+    public void testCannotProcessWithMatchingItemInCartWhichHasNoQuantity()
     {
         final String productId = "B";
         final int cartItemQuantity = 0;
@@ -123,13 +202,17 @@ public class BuyXGetYFreePriceRuleTest
             will(returnValue(cartItemQuantity));
         }});
 
-        BuyXGetYFreePriceRule rule = new BuyXGetYFreePriceRule(productId, 3, 2);
+        XForThePriceOfYRule rule = new XForThePriceOfYRule(productId, 3, 2);
         Assert.assertEquals("Unexpected subtotal returned from process", 0,
                 rule.process(cart, inventory));
     }
 
+    /**
+     * Validate that when an item in the cart matches the product id configured for the rule but item does not exist
+     * in the inventory that nothing is processed.
+     */
     @Test
-    public void testCanProcessWithMatchingItemInCartWhichHasNonZeroQuantityButIsNotInInventory()
+    public void testCannotProcessWithMatchingItemInCartWhichHasNonZeroQuantityButIsNotInInventory()
     {
         final String productId = "B";
 
@@ -150,13 +233,18 @@ public class BuyXGetYFreePriceRuleTest
             will(returnValue(null));
         }});
 
-        BuyXGetYFreePriceRule rule = new BuyXGetYFreePriceRule(productId, 3, 2);
+        XForThePriceOfYRule rule = new XForThePriceOfYRule(productId, 3, 2);
         Assert.assertEquals("Unexpected subtotal returned from process", 0,
                 rule.process(cart, inventory));
     }
 
+    /**
+     * Validate that when an item in the cart matches the product id configured for the rule, the associated product is
+     * in the inventory, the quantity of the item is greater than zero, and the quantity of the item is less than the
+     * minimum necessary for the rule to be applied that nothing is processed.
+     */
     @Test
-    public void testCanProcessWithMatchingItemInCartAndInventoryWhichHasQuantityBelowRule()
+    public void testCannotProcessWithMatchingItemInCartAndInventoryWhichHasQuantityBelowRule()
     {
         final String productId = "B";
         final int productUnitCost = 50;
@@ -179,11 +267,15 @@ public class BuyXGetYFreePriceRuleTest
             oneOf(cart).setItemQuantity(productId, cartItemQuantity);
         }});
 
-        BuyXGetYFreePriceRule rule = new BuyXGetYFreePriceRule(productId, 3, 2);
+        XForThePriceOfYRule rule = new XForThePriceOfYRule(productId, 5, 3);
         Assert.assertEquals("Unexpected subtotal returned from process", 0,
                 rule.process(cart, inventory));
     }
 
+    /**
+     * Validate that when an item in the cart has sufficient quantity to exceed two applications of the rule that the
+     * rule processes the item quantity and cost correctly.
+     */
     @Test
     public void testCanProcessWithMatchingItemInCartAndInventoryWhichHasQuantityAboveRule()
     {
@@ -208,7 +300,7 @@ public class BuyXGetYFreePriceRuleTest
             oneOf(cart).setItemQuantity(productId, 3);
         }});
 
-        BuyXGetYFreePriceRule rule = new BuyXGetYFreePriceRule(productId, 3, 2);
+        XForThePriceOfYRule rule = new XForThePriceOfYRule(productId, 5, 3);
         Assert.assertEquals("Unexpected subtotal returned from process", 300,
                 rule.process(cart, inventory));
     }

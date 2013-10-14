@@ -8,10 +8,13 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- *
+ * Tests for the inventory class.
  */
 public class InventoryTest
 {
+    /**
+     * Validate that no products can be obtained when none are passed during construction of an Inventory object.
+     */
     @Test
     public void testCannotGetProductsWhenNonePassedDuringConstruction()
     {
@@ -21,6 +24,9 @@ public class InventoryTest
         Assert.assertEquals("Unexpected number of products after creation", 0, productsRetrieved.size());
     }
 
+    /**
+     * Validate that products can be obtained when set once after construction of an Inventory object.
+     */
     @Test
     public void testCanGetProductsSetOnceAfterConstruction()
     {
@@ -40,6 +46,9 @@ public class InventoryTest
                 productsRetrieved.containsAll(originalProducts));
     }
 
+    /**
+     * Validate that products can be obtained when set twice after construction of an Inventory object.
+     */
     @Test
     public void testCanGetProductsSetTwiceAfterConstruction()
     {
@@ -64,6 +73,9 @@ public class InventoryTest
                 productsRetrieved.containsAll(newProducts));
     }
 
+    /**
+     * Validate that products can be obtained when passed during construction of an Inventory object.
+     */
     @Test
     public void testCanGetProductsPassedDuringConstruction()
     {
@@ -81,6 +93,9 @@ public class InventoryTest
                 productsRetrieved.containsAll(originalProducts));
     }
 
+    /**
+     * Validate that a single product can be obtained from an Inventory object.
+     */
     @Test
     public void testCanFindProduct()
     {
@@ -97,6 +112,10 @@ public class InventoryTest
         Assert.assertSame("Unexpected product found", secondProduct, productRetrieved);
     }
 
+    /**
+     * Validate that no product can be obtained when the Inventory is not empty but the id of the product to
+     * be obtained is not in the Inventory.
+     */
     @Test
     public void testCannotFindProductWhenInventoryNotEmpty()
     {
@@ -111,6 +130,9 @@ public class InventoryTest
         Assert.assertNull("Product unexpectedly found", productRetrieved);
     }
 
+    /**
+     * Validate that no product can be obtained when the Inventory is empty.
+     */
     @Test
     public void testCannotFindProductWhenInventoryEmpty()
     {
@@ -120,12 +142,20 @@ public class InventoryTest
         Assert.assertNull("Product unexpectedly found", productRetrieved);
     }
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when a null argument is passed into an Inventory
+     * object's getProduct() method
+     */
     @Test(expected=IllegalArgumentException.class)
     public void testAttemptToFindProductWithNullIdThrowsIllegalArgumentException()
     {
         new Inventory().getProduct(null);
     }
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when an empty string argument is passed into an Inventory
+     * object's getProduct() method
+     */
     @Test(expected=IllegalArgumentException.class)
     public void testAttemptToFindProductWithEmptyIdThrowsIllegalArgumentException()
     {

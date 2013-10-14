@@ -11,19 +11,27 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- *
+ * Tests for the PriceScanner class
  */
 public class PriceScannerTest
 {
     @Rule
     public JUnitRuleMockery context = new JUnitRuleMockery();
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when a null inventory argument is passed into a PriceScanner
+     * object's constructor
+     */
     @Test(expected=IllegalArgumentException.class)
     public void testNullInventoryInConstructorThrowsIllegalArgumentException()
     {
         new PriceScanner(null);
     }
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when a null IShoppingCart argument is passed into a
+     * PriceScanner object's scanItems() method
+     */
     @Test(expected=IllegalArgumentException.class)
     public void testNullShoppingCartInScanItemsCallThrowsIllegalArgumentException()
     {
@@ -31,6 +39,9 @@ public class PriceScannerTest
         new PriceScanner(inventory).scanItems(null);
     }
 
+    /**
+     * Validate that items can be properly scanned when no price rules are in effect and the cart is empty.
+     */
     @Test
     public void testCanScanItemsWithNoPriceRulesAndEmptyCart()
     {
@@ -50,6 +61,9 @@ public class PriceScannerTest
                 priceScanner.scanItems(cart));
     }
 
+    /**
+     * Validate that items can be properly scanned when no price rules are in effect and the cart is not empty.
+     */
     @Test
     public void testCanScanItemsWithNoPriceRulesAndNonEmptyCart()
     {
@@ -70,17 +84,26 @@ public class PriceScannerTest
             oneOf(inventory).getProduct("A");
             will(returnValue(new Product("A", 20)));
 
+            oneOf(cart).setItemQuantity("A", 0);
+
             oneOf(inventory).getProduct("B");
             will(returnValue(new Product("B", 50)));
 
+            oneOf(cart).setItemQuantity("B", 0);
+
             oneOf(inventory).getProduct("C");
             will(returnValue(new Product("C", 30)));
+
+            oneOf(cart).setItemQuantity("C", 0);
         }});
 
         Assert.assertEquals("Unexpected total returned from checkout", 340,
                 priceScanner.scanItems(cart));
     }
 
+    /**
+     * Validate that items can be properly scanned when price rules are in effect and the cart is empty.
+     */
     @Test
     public void testCanScanItemsWithPriceRulesAndEmptyCart()
     {
@@ -114,6 +137,9 @@ public class PriceScannerTest
                 priceScanner.scanItems(cart));
     }
 
+    /**
+     * Validate that items can be properly scanned when no price rules are in effect and the cart is not empty.
+     */
     @Test
     public void testCanScanItemsWithPriceRulesAndNonEmptyCart()
     {
@@ -147,11 +173,17 @@ public class PriceScannerTest
             oneOf(inventory).getProduct("A");
             will(returnValue(new Product("A", 20)));
 
+            oneOf(cart).setItemQuantity("A", 0);
+
             oneOf(inventory).getProduct("B");
             will(returnValue(new Product("B", 50)));
 
+            oneOf(cart).setItemQuantity("B", 0);
+
             oneOf(inventory).getProduct("C");
             will(returnValue(new Product("C", 30)));
+
+            oneOf(cart).setItemQuantity("C", 0);
         }});
 
         priceScanner.setPriceRules(priceRules);
@@ -159,6 +191,10 @@ public class PriceScannerTest
                 priceScanner.scanItems(cart));
     }
 
+    /**
+     * Validate that items can be properly scanned when price rules are in effect, the cart is not empty, and
+     * some of the cart items have no quantity at the point the fallback unit price rule is being applied.
+     */
     @Test
     public void testCanScanItemsWithPriceRulesAndNonEmptyCartWithItemsHavingNoQuantity()
     {
@@ -191,6 +227,8 @@ public class PriceScannerTest
 
             oneOf(inventory).getProduct("B");
             will(returnValue(new Product("B", 50)));
+
+            oneOf(cart).setItemQuantity("B", 0);
         }});
 
         priceScanner.setPriceRules(priceRules);
@@ -198,6 +236,10 @@ public class PriceScannerTest
                 priceScanner.scanItems(cart));
     }
 
+    /**
+     * Validate that items can be properly scanned when price rules are in effect, the cart is not empty, and
+     * some of the cart items have product ids which do not map to any products in inventory.
+     */
     @Test
     public void testCanScanItemsWithPriceRulesAndNonEmptyCartWithUnrecognizedItems()
     {
@@ -231,11 +273,15 @@ public class PriceScannerTest
             oneOf(inventory).getProduct("A");
             will(returnValue(new Product("A", 20)));
 
+            oneOf(cart).setItemQuantity("A", 0);
+
             oneOf(inventory).getProduct("B");
             will(returnValue(null));
 
             oneOf(inventory).getProduct("C");
             will(returnValue(new Product("C", 30)));
+
+            oneOf(cart).setItemQuantity("C", 0);
         }});
 
         priceScanner.setPriceRules(priceRules);
@@ -243,6 +289,10 @@ public class PriceScannerTest
                 priceScanner.scanItems(cart));
     }
 
+    /**
+     * Validate that items can be properly scanned twice when the pricing rules in effect change from one scan to the
+     * next and the cart is not empty.
+     */
     @Test
     public void testCanScanItemsTwiceWithDifferentPriceRulesAndNonEmptyCart()
     {
@@ -280,11 +330,17 @@ public class PriceScannerTest
             oneOf(inventory).getProduct("A");
             will(returnValue(new Product("A", 20)));
 
+            oneOf(cart).setItemQuantity("A", 0);
+
             oneOf(inventory).getProduct("B");
             will(returnValue(new Product("B", 50)));
 
+            oneOf(cart).setItemQuantity("B", 0);
+
             oneOf(inventory).getProduct("C");
             will(returnValue(new Product("C", 30)));
+
+            oneOf(cart).setItemQuantity("C", 0);
 
             oneOf(thirdPriceRule).process(cart, priceScanner);
             will(returnValue(10));
@@ -295,11 +351,17 @@ public class PriceScannerTest
             oneOf(inventory).getProduct("A");
             will(returnValue(new Product("A", 20)));
 
+            oneOf(cart).setItemQuantity("A", 0);
+
             oneOf(inventory).getProduct("B");
             will(returnValue(new Product("B", 50)));
 
+            oneOf(cart).setItemQuantity("B", 0);
+
             oneOf(inventory).getProduct("C");
             will(returnValue(new Product("C", 30)));
+
+            oneOf(cart).setItemQuantity("C", 0);
         }});
 
         priceScanner.setPriceRules(originalPriceRules);
@@ -311,8 +373,12 @@ public class PriceScannerTest
                 priceScanner.scanItems(cart));
     }
 
+    /**
+     * Validate that items can be properly scanned twice when product unit prices being used change from one scan to the
+     * next and the cart is not empty.
+     */
     @Test
-    public void testCanScanItemsTwiceWithDifferentInventoryAndNonEmptyCart()
+    public void testCanScanItemsTwiceWithDifferentProductUnitPriceAndNonEmptyCart()
     {
         final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
         final IShoppingCart cart = context.mock(IShoppingCart.class);
@@ -344,11 +410,17 @@ public class PriceScannerTest
             oneOf(inventory).getProduct("A");
             will(returnValue(new Product("A", 20)));
 
+            oneOf(cart).setItemQuantity("A", 0);
+
             oneOf(inventory).getProduct("B");
             will(returnValue(new Product("B", 50)));
 
+            oneOf(cart).setItemQuantity("B", 0);
+
             oneOf(inventory).getProduct("C");
             will(returnValue(new Product("C", 30)));
+
+            oneOf(cart).setItemQuantity("C", 0);
 
             oneOf(firstPriceRule).process(cart, priceScanner);
             will(returnValue(10));
@@ -362,11 +434,17 @@ public class PriceScannerTest
             oneOf(inventory).getProduct("A");
             will(returnValue(new Product("A", 10)));
 
+            oneOf(cart).setItemQuantity("A", 0);
+
             oneOf(inventory).getProduct("B");
             will(returnValue(new Product("B", 20)));
 
+            oneOf(cart).setItemQuantity("B", 0);
+
             oneOf(inventory).getProduct("C");
             will(returnValue(new Product("C", 30)));
+
+            oneOf(cart).setItemQuantity("C", 0);
         }});
 
         priceScanner.setPriceRules(priceRules);
@@ -377,6 +455,10 @@ public class PriceScannerTest
                 priceScanner.scanItems(cart));
     }
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when a null product id argument is passed into a
+     * PriceScanner object's getProduct() method
+     */
     @Test(expected=IllegalArgumentException.class)
     public void testNullIdInGetProductCallThrowsIllegalArgumentException()
     {
@@ -384,6 +466,9 @@ public class PriceScannerTest
         new PriceScanner(inventory).getProduct(null);
     }
 
+    /**
+     * Validate that a single product can be obtained from the inventory.
+     */
     @Test
     public void testCanGetProduct()
     {
@@ -403,6 +488,9 @@ public class PriceScannerTest
                 priceScanner.getProduct(idOfProductToGet));
     }
 
+    /**
+     * Validate that a single product cannot be obtained when it is not present in the inventory.
+     */
     @Test
     public void testCannotGetProductNonexistentProduct()
     {

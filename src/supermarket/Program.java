@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Bootstrap class for invoking the Supermarket from the command line.
  */
 class Program
 {
     /**
      * Program main
-     * @param args Ignored
+     * @param args First argument is used as the item token string to be sent to the Supermarket for checkout
      */
     public static void main(String[] args)
     {
@@ -21,6 +21,11 @@ class Program
         }
     }
 
+    /**
+     * Setup dependencies and invoke the Supermarket checkout process
+     * @param item  Item token string
+     * @return  Total price computed for the items.
+     */
     static int checkout(String item)
     {
         List<IProduct> originalProducts = new ArrayList<IProduct>();
@@ -31,7 +36,7 @@ class Program
         Inventory inventory = new Inventory(originalProducts);
 
         List<IPriceRule> priceRules = new ArrayList<IPriceRule>();
-        priceRules.add(new BuyXGetYFreePriceRule("B", 3, 2));
+        priceRules.add(new XForThePriceOfYRule("B", 5, 3));
 
         PriceScanner priceScanner = new PriceScanner(inventory);
         priceScanner.setPriceRules(priceRules);
@@ -43,6 +48,11 @@ class Program
         return total;
     }
 
+    /**
+     * Parse command line arguments
+     * @param args  First argument is used as the item token string to be sent to the Supermarket for checkout
+     * @return  Item token string, if one is available.  Otherwise, null.
+     */
     private static String parseItem(String[] args)
     {
         String item = null;

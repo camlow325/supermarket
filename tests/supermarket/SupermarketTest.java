@@ -12,19 +12,27 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- *
+ * Tests for the Supermarket class
  */
 public class SupermarketTest
 {
     @Rule
     public JUnitRuleMockery context = new JUnitRuleMockery();
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when a null IPriceScanner argument is passed into a
+     * Supermarket object's constructor.
+     */
     @Test(expected=IllegalArgumentException.class)
     public void testNullPriceScannerInConstructorThrowsIllegalArgumentException()
     {
         new Supermarket(null);
     }
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when a null items argument is passed into a
+     * Supermarket object's checkout() method.
+     */
     @Test(expected=IllegalArgumentException.class)
     public void testNullItemsInCheckoutCallThrowsIllegalArgumentException()
     {
@@ -32,6 +40,9 @@ public class SupermarketTest
         new Supermarket(priceScanner).checkout(null);
     }
 
+    /**
+     * Validate that a checkout is successful when no items are in the cart.
+     */
     @Test
     public void testCanCheckoutWithNoItems()
     {
@@ -53,6 +64,9 @@ public class SupermarketTest
                 new Supermarket(priceScanner).checkout(""));
     }
 
+    /**
+     * Validate that a checkout is successful when one item is in the cart.
+     */
     @Test
     public void testCanCheckoutWithOneItem()
     {
@@ -76,6 +90,9 @@ public class SupermarketTest
                 new Supermarket(priceScanner).checkout("D"));
     }
 
+    /**
+     * Validate that a checkout is successful when multiple items are in the cart.
+     */
     @Test
     public void testCanCheckoutWithMultipleItems()
     {

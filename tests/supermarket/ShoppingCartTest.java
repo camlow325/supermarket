@@ -8,16 +8,23 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- *
+ * Tests for the ShoppingCart class.
  */
 public class ShoppingCartTest
 {
+    /**
+     * Validate that an IllegalArgumentException is thrown when a null items argument is passed into a
+     * ShoppingCart object's constructor.
+     */
     @Test(expected=IllegalArgumentException.class)
     public void testNullItemsInConstructorThrowsIllegalArgumentException()
     {
         new ShoppingCart(null);
     }
 
+    /**
+     * Validate that a shopping cart with an empty items argument is translated to a collection of zero Item objects.
+     */
     @Test
     public void testCanCaptureZeroItemsCorrectly()
     {
@@ -29,6 +36,10 @@ public class ShoppingCartTest
         validateItems(expectedItems, cartItems);
     }
 
+    /**
+     * Validate that a shopping cart with an items argument with one item is translated to a collection of one Item
+     * object.
+     */
     @Test
     public void testCanCaptureOneItemCorrectly()
     {
@@ -43,6 +54,10 @@ public class ShoppingCartTest
         validateItems(expectedItems, cartItems);
     }
 
+    /**
+     * Validate that a shopping cart with an items argument with multiple items is translated to a collection with the
+     * appropriate corresponding content.
+     */
     @Test
     public void testCanCaptureMultipleItemsCorrectly()
     {
@@ -57,6 +72,9 @@ public class ShoppingCartTest
         validateItems(expectedItems, cartItems);
     }
 
+    /**
+     * Validate that an item obtained from a shopping cart has the expected content.
+     */
     @Test
     public void testCanFindItem()
     {
@@ -68,6 +86,9 @@ public class ShoppingCartTest
         validateItem(item, productId, 3);
     }
 
+    /**
+     * Validate that an item not expected to be present in a shopping cart is obtained as null.
+     */
     @Test
     public void testCannotFindNonexistentItem()
     {
@@ -77,6 +98,9 @@ public class ShoppingCartTest
         Assert.assertNull("Item retrieved is non-null", item);
     }
 
+    /**
+     * Validate that an item cannot be obtained from a shopping cart which is empty.
+     */
     @Test
     public void testCannotFindItemWhenCartEmpty()
     {
@@ -86,12 +110,29 @@ public class ShoppingCartTest
         Assert.assertNull("Item retrieved is non-null", item);
     }
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when a null product id argument is passed into a
+     * ShoppingCart object's getItem() method.
+     */
     @Test(expected=IllegalArgumentException.class)
-    public void testNullItemsInGetItemCallThrowsIllegalArgumentException()
+    public void testNullProductIdInGetItemCallThrowsIllegalArgumentException()
     {
         new ShoppingCart("").getItem(null);
     }
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when an empty product id argument is passed into a
+     * ShoppingCart object's getItem() method.
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testEmptyProductIdInGetItemCallThrowsIllegalArgumentException()
+    {
+        new ShoppingCart("").getItem("");
+    }
+
+    /**
+     * Validate that the quantity for an item in the shopping cart can be set properly.
+     */
     @Test
     public void testCanSetItemQuantity()
     {
@@ -115,6 +156,9 @@ public class ShoppingCartTest
         validateItems(expectedItems, cartItems);
     }
 
+    /**
+     * Validate that the quantity for an item not in the shopping cart cannot be set.
+     */
     @Test
     public void testCannotSetItemQuantityForNonexistentItem()
     {
@@ -131,6 +175,10 @@ public class ShoppingCartTest
         validateItems(expectedItems, cartItems);
     }
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when a null product id argument is passed into a
+     * ShoppingCart object's setItemQuantity() method.
+     */
     @Test
     public void testNullProductIdInSetItemQuantityThrowsIllegalArgumentException()
     {
@@ -155,6 +203,10 @@ public class ShoppingCartTest
         validateItems(expectedItems, cartItems);
     }
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when an empty product id argument is passed into a
+     * ShoppingCart object's setItemQuantity() method.
+     */
     @Test
     public void testEmptyProductIdInSetItemQuantityThrowsIllegalArgumentException()
     {
@@ -179,6 +231,10 @@ public class ShoppingCartTest
         validateItems(expectedItems, cartItems);
     }
 
+    /**
+     * Validate that an IllegalArgumentException is thrown when a negative quantity argument is passed into a
+     * ShoppingCart object's setItemQuantity() method.
+     */
     @Test
     public void testNegativeQuantityInSetItemQuantityThrowsIllegalArgumentException()
     {
