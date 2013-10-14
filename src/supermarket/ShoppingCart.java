@@ -57,7 +57,7 @@ class ShoppingCart implements IShoppingCart
     {
         if (productId == null)
         {
-            throw new IllegalArgumentException("item cannot be null");
+            throw new IllegalArgumentException("productId cannot be null");
         }
 
         if (productId.isEmpty())

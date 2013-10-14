@@ -13,7 +13,7 @@ import java.util.List;
 public class InventoryTest
 {
     @Test
-    public void testNoProductsAvailableWhenNonePassedDuringConstruction()
+    public void testCannotGetProductsWhenNonePassedDuringConstruction()
     {
         Inventory inventory = new Inventory();
         Collection<IProduct> productsRetrieved = inventory.getProducts();
@@ -22,7 +22,7 @@ public class InventoryTest
     }
 
     @Test
-    public void testProductsSetOnceAfterConstructionAreRetained()
+    public void testCanGetProductsSetOnceAfterConstruction()
     {
         List<IProduct> originalProducts = new ArrayList<IProduct>();
         originalProducts.add(new Product("A", 30));
@@ -41,7 +41,7 @@ public class InventoryTest
     }
 
     @Test
-    public void testProductsSetTwiceAfterConstructionAreRetained()
+    public void testCanGetProductsSetTwiceAfterConstruction()
     {
         List<IProduct> originalProducts = new ArrayList<IProduct>();
         originalProducts.add(new Product("A", 30));
@@ -65,7 +65,7 @@ public class InventoryTest
     }
 
     @Test
-    public void testProductsPassedDuringConstructionAreRetained()
+    public void testCanGetProductsPassedDuringConstruction()
     {
         List<IProduct> originalProducts = new ArrayList<IProduct>();
         originalProducts.add(new Product("A", 30));

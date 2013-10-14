@@ -1,53 +1,33 @@
 package supermarket;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  *
  */
 
+// Suppressing since problem required this to be declared as public
+@SuppressWarnings("WeakerAccess")
 public class Supermarket
 {
-    private IInventory inventory;
+    private IPriceScanner priceScanner;
 
-    public Supermarket(IInventory inventory)
+    public Supermarket(IPriceScanner priceScanner)
     {
-        if (inventory == null)
+        if (priceScanner == null)
         {
-            throw new IllegalArgumentException("inventory cannot be null");
+            throw new IllegalArgumentException("priceScanner cannot be null");
         }
 
-        this.inventory = inventory;
+        this.priceScanner = priceScanner;
     }
 
     public int checkout(String items)
     {
-        int total = 0;
-
-        if (items != null)
+        if (items == null)
         {
-            total = 1;
-            System.out.println("items are: " + items);
+            throw new IllegalArgumentException("items cannot be null");
         }
 
-        return total;
-    }
-
-    /**
-     * Program main
-     * @param args Ignored
-     */
-    public static void main(String[] args)
-    {
-        List<IProduct> originalProducts = new ArrayList<IProduct>();
-        originalProducts.add(new Product("A", 20));
-        originalProducts.add(new Product("B", 50));
-        originalProducts.add(new Product("C", 30));
-
-        Inventory inventory = new Inventory(originalProducts);
-
-        Supermarket supermarket = new Supermarket(inventory);
-        System.out.println("total at checkout is " + supermarket.checkout("ABC"));
+        ShoppingCart cart = new ShoppingCart(items);
+        return priceScanner.scanItems(cart);
     }
 }

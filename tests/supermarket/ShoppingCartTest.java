@@ -110,7 +110,7 @@ public class ShoppingCartTest
         IItem cartItem = cart.getItem(productId);
         validateItem(cartItem, productId, newQuantity);
 
-        itemToUpdate.setQuantity(newQuantity);
+        expectedItems.set(0, new Item(productId, newQuantity));
         Collection<IItem> cartItems = cart.getItems();
         validateItems(expectedItems, cartItems);
     }
@@ -212,63 +212,10 @@ public class ShoppingCartTest
 
     private void validateItems(List<IItem> expectedItems, Collection<IItem> cartItems)
     {
-        Assert.assertNotNull("Items in cart null", cartItems);
-        Assert.assertEquals("Unexpected number of items in cart", expectedItems.size(), cartItems.size());
-
-        String message = getComparisonFailureMessage(expectedItems, cartItems);
+        String message = IShoppingCartMatcher.getItemComparisonFailureMessage(expectedItems, cartItems);
         if (!message.isEmpty())
         {
             Assert.fail("Errors comparing expected items to cart items: " + message);
         }
-    }
-
-    private String getComparisonFailureMessage(List<IItem> expectedItems, Collection<IItem> cartItems)
-    {
-        StringBuilder builder = new StringBuilder(": ");
-
-        int i = -1;
-        for (IItem cartItem : cartItems)
-        {
-            i++;
-
-            if (cartItem == null)
-            {
-                builder.append("Found null item at cart position ");
-                builder.append(i);
-                builder.append("; ");
-                continue;
-            }
-
-            for (int j = 0; j < expectedItems.size(); j++)
-            {
-                IItem expectedItem = expectedItems.get(j);
-
-                if (expectedItem.getProductId().equals(cartItem.getProductId()))
-                {
-                    if (expectedItem.getQuantity() != cartItem.getQuantity())
-                    {
-                        builder.append("Found mismatched quantity for product id ");
-                        builder.append(expectedItem.getProductId());
-                        builder.append(".  Expected: ");
-                        builder.append(expectedItem.getQuantity());
-                        builder.append(", Actual: ");
-                        builder.append(cartItem.getQuantity());
-                        builder.append("; ");
-                    }
-
-                    expectedItems.remove(j);
-                    break;
-                }
-            }
-        }
-
-        for (IItem expectedItem : expectedItems)
-        {
-            builder.append("Did not find expected item in cart items for product id '");
-            builder.append(expectedItem.getProductId());
-            builder.append("'; ");
-        }
-
-        return builder.substring(0, builder.length() - 2);
     }
 }

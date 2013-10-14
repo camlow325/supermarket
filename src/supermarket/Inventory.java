@@ -6,7 +6,7 @@ import java.util.HashMap;
 /**
  *
  */
-class Inventory implements IInventory
+class Inventory implements IInventoryLookup
 {
     private final HashMap<String, IProduct> productMap;
 
@@ -37,13 +37,11 @@ class Inventory implements IInventory
         return productMap.get(id);
     }
 
-    @Override
     public Collection<IProduct> getProducts()
     {
         return productMap.values();
     }
 
-    @Override
     public void setProducts(Iterable<IProduct> products)
     {
         productMap.clear();

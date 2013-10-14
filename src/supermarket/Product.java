@@ -20,7 +20,10 @@ class Product implements IProduct
             throw new IllegalArgumentException("id cannot be empty");
         }
 
-        setPrice(unitPrice);
+        if (unitPrice < 0)
+        {
+            throw new IllegalArgumentException("price cannot be negative");
+        }
 
         this.id = id;
         this.unitPrice = unitPrice;
@@ -31,18 +34,8 @@ class Product implements IProduct
         return id;
     }
 
-    public int getPrice()
+    public int getUnitPrice()
     {
         return unitPrice;
-    }
-
-    public void setPrice(int unitPrice)
-    {
-        if (unitPrice < 0)
-        {
-            throw new IllegalArgumentException("price is negative");
-        }
-
-        this.unitPrice = unitPrice;
     }
 }

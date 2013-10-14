@@ -20,6 +20,12 @@ public class ItemTest
         new Item("", 0);
     }
 
+    @Test(expected=IllegalArgumentException.class)
+    public void testNegativeQuantityInConstructorThrowsIllegalArgumentException()
+    {
+        new Item("A", -1);
+    }
+
     @Test
     public void testCanGetId()
     {
@@ -29,25 +35,10 @@ public class ItemTest
     }
 
     @Test
-    public void testGetQuantity()
+    public void testCanGetQuantity()
     {
         int quantity = 3;
         Item item = new Item("Bogus", quantity);
         Assert.assertEquals("Unexpected quantity retrieved", quantity, item.getQuantity());
-    }
-
-    @Test
-    public void testSetQuantity()
-    {
-        int newQuantity = 5;
-        Item item = new Item("Bogus", 3);
-
-        item.setQuantity(newQuantity);
-        Assert.assertEquals("Unexpected quantity retrieved after first set", newQuantity, item.getQuantity());
-
-        newQuantity = 7;
-
-        item.setQuantity(newQuantity);
-        Assert.assertEquals("Unexpected quantity retrieved after second set", newQuantity, item.getQuantity());
     }
 }

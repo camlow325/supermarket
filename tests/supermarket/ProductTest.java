@@ -21,13 +21,13 @@ public class ProductTest
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void testNegativePriceInConstructorThrowsIllegalArgumentException()
+    public void testNegativeUnitPriceInConstructorThrowsIllegalArgumentException()
     {
         new Product("A", -1);
     }
 
     @Test
-    public void testGetId()
+    public void testCanGetId()
     {
         String name = "A";
         Product product = new Product(name, 2);
@@ -35,10 +35,10 @@ public class ProductTest
     }
 
     @Test
-    public void testGetPrice()
+    public void testCanGetUnitPrice()
     {
         int price = 2;
         Product product = new Product("A", price);
-        Assert.assertEquals("Unexpected price retrieved", price, product.getPrice());
+        Assert.assertEquals("Unexpected price retrieved", price, product.getUnitPrice());
     }
 }

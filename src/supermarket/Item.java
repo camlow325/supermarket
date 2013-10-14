@@ -12,12 +12,17 @@ class Item implements IItem
     {
         if (productId == null)
         {
-            throw new IllegalArgumentException("productId is null");
+            throw new IllegalArgumentException("productId cannot be null");
         }
 
         if (productId.isEmpty())
         {
-            throw new IllegalArgumentException("productId is empty");
+            throw new IllegalArgumentException("productId cannot be empty");
+        }
+
+        if (quantity < 0)
+        {
+            throw new IllegalArgumentException("quantity cannot be negative");
         }
 
         this.productId = productId;
@@ -32,10 +37,5 @@ class Item implements IItem
     public int getQuantity()
     {
         return quantity;
-    }
-
-    public void setQuantity(int quantity)
-    {
-        this.quantity = quantity;
     }
 }
