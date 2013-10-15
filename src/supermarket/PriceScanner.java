@@ -1,5 +1,7 @@
 package supermarket;
 
+import java.util.Iterator;
+
 /**
  * Scan shopping cart items to compute a total price.
  */
@@ -11,8 +13,9 @@ class PriceScanner implements IPriceScanner, IInventoryLookup
     /**
      * Class constructor.
      * @param inventory  Product information finder.  Must be non-null.
+     * @param priceRules  Price rules to seed into the scanner.  Must be non-null and have at least one element.
      */
-    public PriceScanner(IInventoryLookup inventory)
+    public PriceScanner(IInventoryLookup inventory, Iterable<IPriceRule> priceRules)
     {
         if (inventory == null)
         {
@@ -20,22 +23,35 @@ class PriceScanner implements IPriceScanner, IInventoryLookup
         }
 
         this.inventory = inventory;
+
+        setPriceRules(priceRules);
     }
 
     /**
      * Set the price rules which can be used by the scanner.  Price rules previously in use will be purged from the
      * scanner before the new price rules are added.
-     * @param priceRules  Price rules to seed into the scanner.  May be null.
+     * @param priceRules  Price rules to seed into the scanner.  Must be non-null and have at least one element.
      */
     public void setPriceRules(Iterable<IPriceRule> priceRules)
     {
+        if (priceRules == null)
+        {
+            throw new IllegalArgumentException("priceRules cannot be null");
+        }
+
+        Iterator<IPriceRule> priceRuleIterator = priceRules.iterator();
+        if (priceRuleIterator == null || !priceRuleIterator.hasNext())
+        {
+            throw new IllegalArgumentException("priceRules must have at least one element");
+        }
+
         this.priceRules = priceRules;
     }
 
     /**
      * Scan the items in a shopping cart.
-     * @param cart  Shopping cart to scan.  On return, items successfully scanned will be removed from the cart
-     *              (signified by the item quantity being decremented).
+     * @param cart  Shopping cart to scan.  Must be non-null.  On return, items successfully scanned will be removed
+     *              from the cart (signified by the item quantity being decremented).
      * @return  Total cost of the items in the cart.
      */
     @Override
@@ -43,12 +59,15 @@ class PriceScanner implements IPriceScanner, IInventoryLookup
     {
         if (cart == null)
         {
-            throw new IllegalArgumentException("inventory cannot be null");
+            throw new IllegalArgumentException("cart cannot be null");
         }
 
-        int total = getTotalForPriceRules(cart);
-        // For remaining items in the cart, compute item total using unit price.
-        total += getTotalPriceForUnitPriceRule(cart);
+        int total = 0;
+
+        for (IPriceRule priceRule : priceRules)
+        {
+            total += priceRule.process(cart, this);
+        }
 
         return total;
     }
@@ -66,45 +85,11 @@ class PriceScanner implements IPriceScanner, IInventoryLookup
             throw new IllegalArgumentException("id cannot be null");
         }
 
+        if (id.isEmpty())
+        {
+            throw new IllegalArgumentException("id cannot be empty");
+        }
+
         return inventory.getProduct(id);
-    }
-
-    private int getTotalForPriceRules(IShoppingCart cart)
-    {
-        int total = 0;
-
-        if (priceRules != null)
-        {
-            for (IPriceRule priceRule : priceRules)
-            {
-                total += priceRule.process(cart, this);
-            }
-        }
-
-        return total;
-    }
-
-    private int getTotalPriceForUnitPriceRule(IShoppingCart cart)
-    {
-        int total = 0;
-
-        for (IItem item : cart.getItems())
-        {
-            int quantity = item.getQuantity();
-            if (quantity > 0)
-            {
-                String productId = item.getProductId();
-                IProduct product = getProduct(productId);
-                // TODO: Consider what to do if this fails.  Failure would indicate that the product to which
-                //  this item applies is no longer in the product inventory.  Should throw exception, write
-                //  error to log, ...?
-                if (product != null)
-                {
-                    total += (product.getUnitPrice() * quantity);
-                    cart.setItemQuantity(productId, 0);
-                }
-            }
-        }
-        return total;
     }
 }

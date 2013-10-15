@@ -27,7 +27,7 @@ public class Supermarket
     /**
      * Check out the items in the supplied token string to compute a total price.
      * @param items  String with product ids representing instances of a corresponding item in a cart.  Value cannot be
-     *               null.  For example, a value of 'ABBACBBAB' would indicate that three items having the id 'A', two
+     *               null.  For example, a value of 'ABBACBBAB' would indicate that three items having the id 'A', five
      *               items having the id 'B', and one item having the id 'C' are present in the cart.
      * @return  Total cost of the items in the cart.
      */

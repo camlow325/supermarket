@@ -3,8 +3,7 @@ package supermarket;
 /**
  * Pricing rule for buying some bulk quantity of a product and getting some quantity of the product for free.
  */
-
-class XForThePriceOfYRule implements IPriceRule
+class XForThePriceOfYPriceRule implements IPriceRule
 {
     private String productId;
     private int totalQuantityForRule;
@@ -19,7 +18,7 @@ class XForThePriceOfYRule implements IPriceRule
      *                                   the product is 'free'.  Must be no greater than 1 less than
      *                                   totalQuantityForRule.
      */
-    public XForThePriceOfYRule(String productId, int totalQuantityForRule, int quantityPaidPerUnitPrice)
+    public XForThePriceOfYPriceRule(String productId, int totalQuantityForRule, int quantityPaidPerUnitPrice)
     {
         if (productId == null)
         {

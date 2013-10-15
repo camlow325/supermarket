@@ -10,7 +10,7 @@ class Program
 {
     /**
      * Program main
-     * @param args First argument is used as the item token string to be sent to the Supermarket for checkout
+     * @param args First argument is used as the item token string to be sent to the Supermarket for checkout.
      */
     public static void main(String[] args)
     {
@@ -23,7 +23,7 @@ class Program
 
     /**
      * Setup dependencies and invoke the Supermarket checkout process
-     * @param item  Item token string
+     * @param item  Item token string.
      * @return  Total price computed for the items.
      */
     static int checkout(String item)
@@ -36,10 +36,10 @@ class Program
         Inventory inventory = new Inventory(originalProducts);
 
         List<IPriceRule> priceRules = new ArrayList<IPriceRule>();
-        priceRules.add(new XForThePriceOfYRule("B", 5, 3));
+        priceRules.add(new XForThePriceOfYPriceRule("B", 5, 3));
+        priceRules.add(new BaseUnitPriceRule());
 
-        PriceScanner priceScanner = new PriceScanner(inventory);
-        priceScanner.setPriceRules(priceRules);
+        PriceScanner priceScanner = new PriceScanner(inventory, priceRules);
 
         Supermarket supermarket = new Supermarket(priceScanner);
         int total = supermarket.checkout(item);

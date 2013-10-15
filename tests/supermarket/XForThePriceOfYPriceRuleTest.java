@@ -7,123 +7,123 @@ import org.junit.Rule;
 import org.junit.Test;
 
 /**
- * Tests for the XForThePriceOfYRule class
+ * Tests for the XForThePriceOfYPriceRule class
  */
-public class XForThePriceOfYRuleTest
+public class XForThePriceOfYPriceRuleTest
 {
     @Rule
     public JUnitRuleMockery context = new JUnitRuleMockery();
 
     /**
      * Validate that an IllegalArgumentException is thrown when a null product id argument is passed into an
-     * XForThePriceOfYRule object's constructor.
+     * XForThePriceOfYPriceRule object's constructor.
      */
     @Test(expected=IllegalArgumentException.class)
     public void testNullProductIdInConstructorThrowsIllegalArgumentException()
     {
-        new XForThePriceOfYRule(null, 1, 2);
+        new XForThePriceOfYPriceRule(null, 1, 2);
     }
 
     /**
      * Validate that an IllegalArgumentException is thrown when an empty product id argument is passed into a
-     * XForThePriceOfYRule object's constructor.
+     * XForThePriceOfYPriceRule object's constructor.
      */
     @Test(expected=IllegalArgumentException.class)
     public void testEmptyProductIdInConstructorThrowsIllegalArgumentException()
     {
-        new XForThePriceOfYRule("", 1, 2);
+        new XForThePriceOfYPriceRule("", 1, 2);
     }
 
     /**
      * Validate that an IllegalArgumentException is thrown when a total quantity for rule of one is passed into an
-     * XForThePriceOfYRule object's constructor.
+     * XForThePriceOfYPriceRule object's constructor.
      */
     @Test(expected=IllegalArgumentException.class)
     public void testOneTotalQuantityForRuleInConstructorThrowsIllegalArgumentException()
     {
-        new XForThePriceOfYRule("A", 1, 2);
+        new XForThePriceOfYPriceRule("A", 1, 2);
     }
 
     /**
      * Validate that an IllegalArgumentException is thrown when a total quantity for rule of zero is passed into an
-     * XForThePriceOfYRule object's constructor.
+     * XForThePriceOfYPriceRule object's constructor.
      */
     @Test(expected=IllegalArgumentException.class)
     public void testZeroTotalQuantityForRuleInConstructorThrowsIllegalArgumentException()
     {
-        new XForThePriceOfYRule("A", 0, 2);
+        new XForThePriceOfYPriceRule("A", 0, 2);
     }
 
     /**
      * Validate that an IllegalArgumentException is thrown when a negative total quantity for rule is passed into an
-     * XForThePriceOfYRule object's constructor.
+     * XForThePriceOfYPriceRule object's constructor.
      */
     @Test(expected=IllegalArgumentException.class)
     public void testNegativeTotalQuantityForRuleInConstructorThrowsIllegalArgumentException()
     {
-        new XForThePriceOfYRule("A", -1, 2);
+        new XForThePriceOfYPriceRule("A", -1, 2);
     }
 
     /**
      * Validate that an IllegalArgumentException is thrown when a quantity paid per unit price of zero is passed into an
-     * XForThePriceOfYRule object's constructor.
+     * XForThePriceOfYPriceRule object's constructor.
      */
     @Test(expected=IllegalArgumentException.class)
     public void testZeroQuantityPaidPerUnitPriceInConstructorThrowsIllegalArgumentException()
     {
-        new XForThePriceOfYRule("A", 1, 0);
+        new XForThePriceOfYPriceRule("A", 1, 0);
     }
 
     /**
      * Validate that an IllegalArgumentException is thrown when a negative quantity paid per unit price is passed
-     * into an XForThePriceOfYRule object's constructor.
+     * into an XForThePriceOfYPriceRule object's constructor.
      */
     @Test(expected=IllegalArgumentException.class)
     public void testNegativeQuantityPaidPerUnitPriceInConstructorThrowsIllegalArgumentException()
     {
-        new XForThePriceOfYRule("A", 1, -1);
+        new XForThePriceOfYPriceRule("A", 1, -1);
     }
 
     /**
      * Validate that an IllegalArgumentException is thrown when a quantity paid per unit price is equal to that of the
-     * total quantity for the rule is passed into an XForThePriceOfYRule object's constructor.
+     * total quantity for the rule is passed into an XForThePriceOfYPriceRule object's constructor.
      */
     @Test(expected=IllegalArgumentException.class)
     public void testQuantityPaidPerUnitPriceEqualsTotalQuantityForRuleInConstructorThrowsIllegalArgumentException()
     {
-        new XForThePriceOfYRule("A", 3, 3);
+        new XForThePriceOfYPriceRule("A", 3, 3);
     }
 
     /**
      * Validate that an IllegalArgumentException is thrown when a quantity paid per unit price exceeds that of the
-     * total quantity for the rule is passed into an XForThePriceOfYRule object's constructor.
+     * total quantity for the rule is passed into an XForThePriceOfYPriceRule object's constructor.
      */
     @Test(expected=IllegalArgumentException.class)
     public void testQuantityPaidPerUnitPriceExceedsTotalQuantityForRuleInConstructorThrowsIllegalArgumentException()
     {
-        new XForThePriceOfYRule("A", 3, 4);
+        new XForThePriceOfYPriceRule("A", 3, 4);
     }
 
     /**
-     * Validate that an IllegalArgumentException is thrown when a null cart is passed into an XForThePriceOfYRule
+     * Validate that an IllegalArgumentException is thrown when a null cart is passed into an XForThePriceOfYPriceRule
      * object's process() method.
      */
     @Test(expected=IllegalArgumentException.class)
     public void testNullCartInProcessCallThrowsIllegalArgumentException()
     {
         final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
-        new XForThePriceOfYRule("A", 5, 3).process(null, inventory);
+        new XForThePriceOfYPriceRule("A", 5, 3).process(null, inventory);
     }
 
     /**
      * Validate that an IllegalArgumentException is thrown when a null inventory lookup is passed into an
-     * XForThePriceOfYRule object's process() method.
+     * XForThePriceOfYPriceRule object's process() method.
      */
     @Test(expected=IllegalArgumentException.class)
     public void testNullLookupInProcessCallThrowsIllegalArgumentException()
     {
         final IShoppingCart cart = context.mock(IShoppingCart.class);
-        new XForThePriceOfYRule("A", 5, 3).process(cart, null);
+        new XForThePriceOfYPriceRule("A", 5, 3).process(cart, null);
     }
 
     /**
@@ -154,7 +154,7 @@ public class XForThePriceOfYRuleTest
             oneOf(cart).setItemQuantity(productId, 0);
         }});
 
-        XForThePriceOfYRule rule = new XForThePriceOfYRule(productId, 5, 3);
+        XForThePriceOfYPriceRule rule = new XForThePriceOfYPriceRule(productId, 5, 3);
         Assert.assertEquals("Unexpected subtotal returned from process", 150,
                 rule.process(cart, inventory));
     }
@@ -175,7 +175,7 @@ public class XForThePriceOfYRuleTest
             will(returnValue(null));
         }});
 
-        XForThePriceOfYRule rule = new XForThePriceOfYRule(productId, 3, 2);
+        XForThePriceOfYPriceRule rule = new XForThePriceOfYPriceRule(productId, 3, 2);
         Assert.assertEquals("Unexpected subtotal returned from process", 0,
                 rule.process(cart, inventory));
     }
@@ -202,7 +202,7 @@ public class XForThePriceOfYRuleTest
             will(returnValue(cartItemQuantity));
         }});
 
-        XForThePriceOfYRule rule = new XForThePriceOfYRule(productId, 3, 2);
+        XForThePriceOfYPriceRule rule = new XForThePriceOfYPriceRule(productId, 3, 2);
         Assert.assertEquals("Unexpected subtotal returned from process", 0,
                 rule.process(cart, inventory));
     }
@@ -233,7 +233,7 @@ public class XForThePriceOfYRuleTest
             will(returnValue(null));
         }});
 
-        XForThePriceOfYRule rule = new XForThePriceOfYRule(productId, 3, 2);
+        XForThePriceOfYPriceRule rule = new XForThePriceOfYPriceRule(productId, 3, 2);
         Assert.assertEquals("Unexpected subtotal returned from process", 0,
                 rule.process(cart, inventory));
     }
@@ -267,7 +267,7 @@ public class XForThePriceOfYRuleTest
             oneOf(cart).setItemQuantity(productId, cartItemQuantity);
         }});
 
-        XForThePriceOfYRule rule = new XForThePriceOfYRule(productId, 5, 3);
+        XForThePriceOfYPriceRule rule = new XForThePriceOfYPriceRule(productId, 5, 3);
         Assert.assertEquals("Unexpected subtotal returned from process", 0,
                 rule.process(cart, inventory));
     }
@@ -300,7 +300,7 @@ public class XForThePriceOfYRuleTest
             oneOf(cart).setItemQuantity(productId, 3);
         }});
 
-        XForThePriceOfYRule rule = new XForThePriceOfYRule(productId, 5, 3);
+        XForThePriceOfYPriceRule rule = new XForThePriceOfYPriceRule(productId, 5, 3);
         Assert.assertEquals("Unexpected subtotal returned from process", 300,
                 rule.process(cart, inventory));
     }

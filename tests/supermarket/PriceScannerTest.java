@@ -7,7 +7,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -25,7 +24,54 @@ public class PriceScannerTest
     @Test(expected=IllegalArgumentException.class)
     public void testNullInventoryInConstructorThrowsIllegalArgumentException()
     {
-        new PriceScanner(null);
+        List<IPriceRule> priceRules = new ArrayList<IPriceRule>();
+        priceRules.add(context.mock(IPriceRule.class));
+
+        new PriceScanner(null, priceRules);
+    }
+
+    /**
+     * Validate that an IllegalArgumentException is thrown when a null priceRules argument is passed into a PriceScanner
+     * object's constructor
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullPriceRulesInConstructorThrowsIllegalArgumentException()
+    {
+        final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
+        new PriceScanner(inventory, null);
+    }
+
+    /**
+     * Validate that an IllegalArgumentException is thrown when a non-null priceRules argument with no elements is
+     * passed into a PriceScanner object's constructor
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testPriceRulesWithNoElementsInConstructorThrowsIllegalArgumentException()
+    {
+        final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
+        new PriceScanner(inventory, new ArrayList<IPriceRule>());
+    }
+
+    /**
+     * Validate that an IllegalArgumentException is thrown when a null priceRules argument is passed into a PriceScanner
+     * object's setPriceRules() method
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullPriceRulesInSetPriceRulesCallThrowsIllegalArgumentException()
+    {
+        final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
+        new PriceScanner(inventory, null).setPriceRules(null);
+    }
+
+    /**
+     * Validate that an IllegalArgumentException is thrown when a non-null priceRules argument with no elements is
+     * passed into a PriceScanner object's setPriceRules() method
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testPriceRulesWithNoElementsInSetPriceRulesCallThrowsIllegalArgumentException()
+    {
+        final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
+        new PriceScanner(inventory, new ArrayList<IPriceRule>());
     }
 
     /**
@@ -35,77 +81,18 @@ public class PriceScannerTest
     @Test(expected=IllegalArgumentException.class)
     public void testNullShoppingCartInScanItemsCallThrowsIllegalArgumentException()
     {
+        List<IPriceRule> priceRules = new ArrayList<IPriceRule>();
+        priceRules.add(context.mock(IPriceRule.class));
+
         final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
-        new PriceScanner(inventory).scanItems(null);
+        new PriceScanner(inventory, priceRules).scanItems(null);
     }
 
     /**
-     * Validate that items can be properly scanned when no price rules are in effect and the cart is empty.
+     * Validate that items can be properly scanned.
      */
     @Test
-    public void testCanScanItemsWithNoPriceRulesAndEmptyCart()
-    {
-        final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
-        final IShoppingCart cart = context.mock(IShoppingCart.class);
-
-        final PriceScanner priceScanner = new PriceScanner(inventory);
-
-        final Collection<IItem> cartItems = new ArrayList<IItem>();
-
-        context.checking(new Expectations() {{
-            oneOf(cart).getItems();
-            will(returnValue(cartItems));
-        }});
-
-        Assert.assertEquals("Unexpected total returned from checkout", 0,
-                priceScanner.scanItems(cart));
-    }
-
-    /**
-     * Validate that items can be properly scanned when no price rules are in effect and the cart is not empty.
-     */
-    @Test
-    public void testCanScanItemsWithNoPriceRulesAndNonEmptyCart()
-    {
-        final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
-        final IShoppingCart cart = context.mock(IShoppingCart.class);
-
-        final PriceScanner priceScanner = new PriceScanner(inventory);
-
-        final Collection<IItem> cartItems = new ArrayList<IItem>();
-        cartItems.add(new Item("A", 3));
-        cartItems.add(new Item("B", 5));
-        cartItems.add(new Item("C", 1));
-
-        context.checking(new Expectations() {{
-            oneOf(cart).getItems();
-            will(returnValue(cartItems));
-
-            oneOf(inventory).getProduct("A");
-            will(returnValue(new Product("A", 20)));
-
-            oneOf(cart).setItemQuantity("A", 0);
-
-            oneOf(inventory).getProduct("B");
-            will(returnValue(new Product("B", 50)));
-
-            oneOf(cart).setItemQuantity("B", 0);
-
-            oneOf(inventory).getProduct("C");
-            will(returnValue(new Product("C", 30)));
-
-            oneOf(cart).setItemQuantity("C", 0);
-        }});
-
-        Assert.assertEquals("Unexpected total returned from checkout", 340,
-                priceScanner.scanItems(cart));
-    }
-
-    /**
-     * Validate that items can be properly scanned when price rules are in effect and the cart is empty.
-     */
-    @Test
-    public void testCanScanItemsWithPriceRulesAndEmptyCart()
+    public void testCanScanItems()
     {
         final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
         final IShoppingCart cart = context.mock(IShoppingCart.class);
@@ -117,9 +104,7 @@ public class PriceScannerTest
         priceRules.add(firstPriceRule);
         priceRules.add(secondPriceRule);
 
-        final PriceScanner priceScanner = new PriceScanner(inventory);
-
-        final Collection<IItem> cartItems = new ArrayList<IItem>();
+        final PriceScanner priceScanner = new PriceScanner(inventory, priceRules);
 
         context.checking(new Expectations() {{
             oneOf(firstPriceRule).process(cart, priceScanner);
@@ -127,174 +112,18 @@ public class PriceScannerTest
 
             oneOf(secondPriceRule).process(cart, priceScanner);
             will(returnValue(20));
-
-            oneOf(cart).getItems();
-            will(returnValue(cartItems));
         }});
 
-        priceScanner.setPriceRules(priceRules);
         Assert.assertEquals("Unexpected total returned from checkout", 30,
                 priceScanner.scanItems(cart));
     }
 
     /**
-     * Validate that items can be properly scanned when no price rules are in effect and the cart is not empty.
-     */
-    @Test
-    public void testCanScanItemsWithPriceRulesAndNonEmptyCart()
-    {
-        final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
-        final IShoppingCart cart = context.mock(IShoppingCart.class);
-
-        final IPriceRule firstPriceRule = context.mock(IPriceRule.class, "price rule 1");
-        final IPriceRule secondPriceRule = context.mock(IPriceRule.class, "price rule 2");
-
-        List<IPriceRule> priceRules = new ArrayList<IPriceRule>();
-        priceRules.add(firstPriceRule);
-        priceRules.add(secondPriceRule);
-
-        final PriceScanner priceScanner = new PriceScanner(inventory);
-
-        final Collection<IItem> cartItems = new ArrayList<IItem>();
-        cartItems.add(new Item("A", 3));
-        cartItems.add(new Item("B", 5));
-        cartItems.add(new Item("C", 1));
-
-        context.checking(new Expectations() {{
-            oneOf(firstPriceRule).process(cart, priceScanner);
-            will(returnValue(10));
-
-            oneOf(secondPriceRule).process(cart, priceScanner);
-            will(returnValue(20));
-
-            oneOf(cart).getItems();
-            will(returnValue(cartItems));
-
-            oneOf(inventory).getProduct("A");
-            will(returnValue(new Product("A", 20)));
-
-            oneOf(cart).setItemQuantity("A", 0);
-
-            oneOf(inventory).getProduct("B");
-            will(returnValue(new Product("B", 50)));
-
-            oneOf(cart).setItemQuantity("B", 0);
-
-            oneOf(inventory).getProduct("C");
-            will(returnValue(new Product("C", 30)));
-
-            oneOf(cart).setItemQuantity("C", 0);
-        }});
-
-        priceScanner.setPriceRules(priceRules);
-        Assert.assertEquals("Unexpected total returned from checkout", 370,
-                priceScanner.scanItems(cart));
-    }
-
-    /**
-     * Validate that items can be properly scanned when price rules are in effect, the cart is not empty, and
-     * some of the cart items have no quantity at the point the fallback unit price rule is being applied.
-     */
-    @Test
-    public void testCanScanItemsWithPriceRulesAndNonEmptyCartWithItemsHavingNoQuantity()
-    {
-        final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
-        final IShoppingCart cart = context.mock(IShoppingCart.class);
-
-        final IPriceRule firstPriceRule = context.mock(IPriceRule.class, "price rule 1");
-        final IPriceRule secondPriceRule = context.mock(IPriceRule.class, "price rule 2");
-
-        List<IPriceRule> priceRules = new ArrayList<IPriceRule>();
-        priceRules.add(firstPriceRule);
-        priceRules.add(secondPriceRule);
-
-        final PriceScanner priceScanner = new PriceScanner(inventory);
-
-        final Collection<IItem> cartItems = new ArrayList<IItem>();
-        cartItems.add(new Item("A", 0));
-        cartItems.add(new Item("B", 5));
-        cartItems.add(new Item("C", 0));
-
-        context.checking(new Expectations() {{
-            oneOf(firstPriceRule).process(cart, priceScanner);
-            will(returnValue(10));
-
-            oneOf(secondPriceRule).process(cart, priceScanner);
-            will(returnValue(20));
-
-            oneOf(cart).getItems();
-            will(returnValue(cartItems));
-
-            oneOf(inventory).getProduct("B");
-            will(returnValue(new Product("B", 50)));
-
-            oneOf(cart).setItemQuantity("B", 0);
-        }});
-
-        priceScanner.setPriceRules(priceRules);
-        Assert.assertEquals("Unexpected total returned from checkout", 280,
-                priceScanner.scanItems(cart));
-    }
-
-    /**
-     * Validate that items can be properly scanned when price rules are in effect, the cart is not empty, and
-     * some of the cart items have product ids which do not map to any products in inventory.
-     */
-    @Test
-    public void testCanScanItemsWithPriceRulesAndNonEmptyCartWithUnrecognizedItems()
-    {
-        final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
-        final IShoppingCart cart = context.mock(IShoppingCart.class);
-
-        final IPriceRule firstPriceRule = context.mock(IPriceRule.class, "price rule 1");
-        final IPriceRule secondPriceRule = context.mock(IPriceRule.class, "price rule 2");
-
-        List<IPriceRule> priceRules = new ArrayList<IPriceRule>();
-        priceRules.add(firstPriceRule);
-        priceRules.add(secondPriceRule);
-
-        final PriceScanner priceScanner = new PriceScanner(inventory);
-
-        final Collection<IItem> cartItems = new ArrayList<IItem>();
-        cartItems.add(new Item("A", 3));
-        cartItems.add(new Item("B", 5));
-        cartItems.add(new Item("C", 1));
-
-        context.checking(new Expectations() {{
-            oneOf(firstPriceRule).process(cart, priceScanner);
-            will(returnValue(10));
-
-            oneOf(secondPriceRule).process(cart, priceScanner);
-            will(returnValue(20));
-
-            oneOf(cart).getItems();
-            will(returnValue(cartItems));
-
-            oneOf(inventory).getProduct("A");
-            will(returnValue(new Product("A", 20)));
-
-            oneOf(cart).setItemQuantity("A", 0);
-
-            oneOf(inventory).getProduct("B");
-            will(returnValue(null));
-
-            oneOf(inventory).getProduct("C");
-            will(returnValue(new Product("C", 30)));
-
-            oneOf(cart).setItemQuantity("C", 0);
-        }});
-
-        priceScanner.setPriceRules(priceRules);
-        Assert.assertEquals("Unexpected total returned from checkout", 120,
-                priceScanner.scanItems(cart));
-    }
-
-    /**
      * Validate that items can be properly scanned twice when the pricing rules in effect change from one scan to the
-     * next and the cart is not empty.
+     * next.
      */
     @Test
-    public void testCanScanItemsTwiceWithDifferentPriceRulesAndNonEmptyCart()
+    public void testCanScanItemsTwiceWithDifferentPriceRules()
     {
         final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
         final IShoppingCart cart = context.mock(IShoppingCart.class);
@@ -310,148 +139,25 @@ public class PriceScannerTest
         List<IPriceRule> newPriceRules = new ArrayList<IPriceRule>();
         newPriceRules.add(thirdPriceRule);
 
-        final PriceScanner priceScanner = new PriceScanner(inventory);
+        final PriceScanner priceScanner = new PriceScanner(inventory, originalPriceRules);
 
-        final Collection<IItem> cartItems = new ArrayList<IItem>();
-        cartItems.add(new Item("A", 3));
-        cartItems.add(new Item("B", 5));
-        cartItems.add(new Item("C", 1));
+        context.checking(new Expectations()
+        {{
+                oneOf(firstPriceRule).process(cart, priceScanner);
+                will(returnValue(40));
 
-        context.checking(new Expectations() {{
-            oneOf(firstPriceRule).process(cart, priceScanner);
-            will(returnValue(10));
+                oneOf(secondPriceRule).process(cart, priceScanner);
+                will(returnValue(5));
 
-            oneOf(secondPriceRule).process(cart, priceScanner);
-            will(returnValue(20));
+                oneOf(thirdPriceRule).process(cart, priceScanner);
+                will(returnValue(27));
+            }});
 
-            oneOf(cart).getItems();
-            will(returnValue(cartItems));
-
-            oneOf(inventory).getProduct("A");
-            will(returnValue(new Product("A", 20)));
-
-            oneOf(cart).setItemQuantity("A", 0);
-
-            oneOf(inventory).getProduct("B");
-            will(returnValue(new Product("B", 50)));
-
-            oneOf(cart).setItemQuantity("B", 0);
-
-            oneOf(inventory).getProduct("C");
-            will(returnValue(new Product("C", 30)));
-
-            oneOf(cart).setItemQuantity("C", 0);
-
-            oneOf(thirdPriceRule).process(cart, priceScanner);
-            will(returnValue(10));
-
-            oneOf(cart).getItems();
-            will(returnValue(cartItems));
-
-            oneOf(inventory).getProduct("A");
-            will(returnValue(new Product("A", 20)));
-
-            oneOf(cart).setItemQuantity("A", 0);
-
-            oneOf(inventory).getProduct("B");
-            will(returnValue(new Product("B", 50)));
-
-            oneOf(cart).setItemQuantity("B", 0);
-
-            oneOf(inventory).getProduct("C");
-            will(returnValue(new Product("C", 30)));
-
-            oneOf(cart).setItemQuantity("C", 0);
-        }});
-
-        priceScanner.setPriceRules(originalPriceRules);
-        Assert.assertEquals("Unexpected total returned from original checkout", 370,
+        Assert.assertEquals("Unexpected total returned from original checkout", 45,
                 priceScanner.scanItems(cart));
 
         priceScanner.setPriceRules(newPriceRules);
-        Assert.assertEquals("Unexpected total returned from second checkout", 350,
-                priceScanner.scanItems(cart));
-    }
-
-    /**
-     * Validate that items can be properly scanned twice when product unit prices being used change from one scan to the
-     * next and the cart is not empty.
-     */
-    @Test
-    public void testCanScanItemsTwiceWithDifferentProductUnitPriceAndNonEmptyCart()
-    {
-        final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
-        final IShoppingCart cart = context.mock(IShoppingCart.class);
-
-        final IPriceRule firstPriceRule = context.mock(IPriceRule.class, "price rule 1");
-        final IPriceRule secondPriceRule = context.mock(IPriceRule.class, "price rule 2");
-
-        List<IPriceRule> priceRules = new ArrayList<IPriceRule>();
-        priceRules.add(firstPriceRule);
-        priceRules.add(secondPriceRule);
-
-        final PriceScanner priceScanner = new PriceScanner(inventory);
-
-        final Collection<IItem> cartItems = new ArrayList<IItem>();
-        cartItems.add(new Item("A", 3));
-        cartItems.add(new Item("B", 5));
-        cartItems.add(new Item("C", 1));
-
-        context.checking(new Expectations() {{
-            oneOf(firstPriceRule).process(cart, priceScanner);
-            will(returnValue(10));
-
-            oneOf(secondPriceRule).process(cart, priceScanner);
-            will(returnValue(20));
-
-            oneOf(cart).getItems();
-            will(returnValue(cartItems));
-
-            oneOf(inventory).getProduct("A");
-            will(returnValue(new Product("A", 20)));
-
-            oneOf(cart).setItemQuantity("A", 0);
-
-            oneOf(inventory).getProduct("B");
-            will(returnValue(new Product("B", 50)));
-
-            oneOf(cart).setItemQuantity("B", 0);
-
-            oneOf(inventory).getProduct("C");
-            will(returnValue(new Product("C", 30)));
-
-            oneOf(cart).setItemQuantity("C", 0);
-
-            oneOf(firstPriceRule).process(cart, priceScanner);
-            will(returnValue(10));
-
-            oneOf(secondPriceRule).process(cart, priceScanner);
-            will(returnValue(20));
-
-            oneOf(cart).getItems();
-            will(returnValue(cartItems));
-
-            oneOf(inventory).getProduct("A");
-            will(returnValue(new Product("A", 10)));
-
-            oneOf(cart).setItemQuantity("A", 0);
-
-            oneOf(inventory).getProduct("B");
-            will(returnValue(new Product("B", 20)));
-
-            oneOf(cart).setItemQuantity("B", 0);
-
-            oneOf(inventory).getProduct("C");
-            will(returnValue(new Product("C", 30)));
-
-            oneOf(cart).setItemQuantity("C", 0);
-        }});
-
-        priceScanner.setPriceRules(priceRules);
-        Assert.assertEquals("Unexpected total returned from original checkout", 370,
-                priceScanner.scanItems(cart));
-
-        Assert.assertEquals("Unexpected total returned from second checkout", 190,
+        Assert.assertEquals("Unexpected total returned from second checkout", 27,
                 priceScanner.scanItems(cart));
     }
 
@@ -462,8 +168,27 @@ public class PriceScannerTest
     @Test(expected=IllegalArgumentException.class)
     public void testNullIdInGetProductCallThrowsIllegalArgumentException()
     {
+        List<IPriceRule> priceRules = new ArrayList<IPriceRule>();
+        priceRules.add(context.mock(IPriceRule.class));
+
         final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
-        new PriceScanner(inventory).getProduct(null);
+
+        new PriceScanner(inventory, priceRules).getProduct(null);
+    }
+
+    /**
+     * Validate that an IllegalArgumentException is thrown when an empty product id argument is passed into a
+     * PriceScanner object's getProduct() method
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testEmptyIdInGetProductCallThrowsIllegalArgumentException()
+    {
+        List<IPriceRule> priceRules = new ArrayList<IPriceRule>();
+        priceRules.add(context.mock(IPriceRule.class));
+
+        final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
+
+        new PriceScanner(inventory, priceRules).getProduct("");
     }
 
     /**
@@ -472,9 +197,12 @@ public class PriceScannerTest
     @Test
     public void testCanGetProduct()
     {
+        List<IPriceRule> priceRules = new ArrayList<IPriceRule>();
+        priceRules.add(context.mock(IPriceRule.class));
+
         final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
 
-        final PriceScanner priceScanner = new PriceScanner(inventory);
+        final PriceScanner priceScanner = new PriceScanner(inventory, priceRules);
 
         final Product returnProduct = new Product("A", 20);
         final String idOfProductToGet = "A";
@@ -494,9 +222,12 @@ public class PriceScannerTest
     @Test
     public void testCannotGetProductNonexistentProduct()
     {
+        List<IPriceRule> priceRules = new ArrayList<IPriceRule>();
+        priceRules.add(context.mock(IPriceRule.class));
+
         final IInventoryLookup inventory = context.mock(IInventoryLookup.class);
 
-        final PriceScanner priceScanner = new PriceScanner(inventory);
+        final PriceScanner priceScanner = new PriceScanner(inventory, priceRules);
 
         final String idOfProductToGet = "A";
 

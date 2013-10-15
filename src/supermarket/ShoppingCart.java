@@ -16,7 +16,7 @@ class ShoppingCart implements IShoppingCart
     /**
      * Class constructor
      * @param items  String with product ids representing instances of a corresponding item in a cart.  Value cannot be
-     *               null.  For example, a value of 'ABBACBBAB' would indicate that three items having the id 'A', two
+     *               null.  For example, a value of 'ABBACBBAB' would indicate that three items having the id 'A', five
      *               items having the id 'B', and one item having the id 'C' are present in the cart.
      */
     public ShoppingCart(String items)
