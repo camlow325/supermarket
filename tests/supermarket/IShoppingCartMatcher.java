@@ -43,7 +43,10 @@ class IShoppingCartMatcher extends TypeSafeMatcher<IShoppingCart>
     @Override
     protected void describeMismatchSafely(IShoppingCart actualCart, Description mismatchDescription)
     {
-        mismatchDescription.appendText(getMismatchMessage(actualCart));
+        if (mismatchDescription != null)
+        {
+            mismatchDescription.appendText(getMismatchMessage(actualCart));
+        }
     }
 
     /**
@@ -53,7 +56,10 @@ class IShoppingCartMatcher extends TypeSafeMatcher<IShoppingCart>
     @Override
     public void describeTo(Description description)
     {
-        description.appendText("IShoppingCartMatcher");
+        if (description != null)
+        {
+            description.appendText("IShoppingCartMatcher");
+        }
     }
 
     /**
@@ -61,7 +67,8 @@ class IShoppingCartMatcher extends TypeSafeMatcher<IShoppingCart>
      * individual items within the collection may differ while still allowing for a successful result.
      * @param expectedItems  Items that the actualItems are expected to match.
      * @param actualItems  Items to be compared to the expectedItems.
-     * @return  True if the items match.  Otherwise, false.
+     * @return  Non-empty concatenation of messages for any item comparison failures.  If no differences between the
+     * items exist, the return string would be empty.
      */
     public static String getItemComparisonFailureMessage(Collection<IItem> expectedItems, Collection<IItem> actualItems)
     {
